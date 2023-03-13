@@ -8,15 +8,14 @@ const notifyCtrl = {
       if(!req.user) return res.status(400).json({ msg: 'Invalid Authentication!'})
       try {
          const { id, recipients, url, text, content, image } = req.body
-         console.log(recipients)
-         const newRecipients = (recipients as IUser[]).filter(item => item._id !== req.user?._id)
-         if(recipients.includes(req.user._id?.toString())) return;
+         const newRecipients = (recipients as IUser[]).filter(item => item._id !== req.user?._id.valueOf())
+         if(newRecipients.length === 0) return;
          const notify = new Notifies({
             id, recipients: newRecipients, url, text, content, image, user: req.user._id
          })
          console.log(notify);
          
-         // await notify.save()
+         await notify.save()
 
          res.json({ notify })
       } catch(err: any) {

@@ -13,7 +13,7 @@ class ApiFeatures {
 
    paginating() {
       const page = this.queryString.page * 1 || 1;
-      const limit = this.queryString.limit * 1 || 3;
+      const limit = this.queryString.limit * 1 || 9;
       const skip = (page - 1) * limit;
       this.query = this.query.skip(skip).limit(limit);
       return this
@@ -61,8 +61,9 @@ const messageCtrl = {
             recipients: { $in: [req.user._id] }
          }), req.query).paginating();
          const conversations = await features.query.sort('-updatedAt')
-         // .populate('recipients', 'avatar fullname username')
-
+         .populate('recipients', 'avatar fullname username')
+         console.log({ conversations });
+         
          res.json({ conversations, total: conversations.length })
       } catch(err: any) {
          return res.status(500).json({msg: err.message})

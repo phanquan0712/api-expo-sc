@@ -12,12 +12,16 @@ const EditData = (data: any[], id: any, call: any) => {
 
 
 const checkExist = (data: any, socket: Socket) => {
+   console.log(users);
+   
+   
    const user = users.find(item => (item.id === data._id && item.socketId == socket.id))
    if (user) return
    else users.push({ id: data._id, socketId: socket.id, followers: data.followers })
 }
 
 const SocketServer = (socket: Socket) => {
+   console.log('Socket Connected: ' + socket.id);
    // joinUser
    socket.on('joinUser', (user: any) => {
       if(users.every(item => item.id !== user._id)) {
@@ -28,8 +32,10 @@ const SocketServer = (socket: Socket) => {
    // Disconnect
    socket.on('disconnect', () => {
       const data = users.find(user => user.socketId === socket.id)
+      console.log(data);
+      
       if(data) {
-         const clients = users.filter(ele => (data.followers as any[]).find(item => item._id === ele.id))
+         const clients = users.filter(ele => (data.followers as any[])?.find(item => item._id === ele.id))
          if(clients.length > 0) {
             clients.forEach(client => {
                socket.to(`${client.socketId}`).emit('checkUserOffline', data.id)
@@ -120,6 +126,7 @@ const SocketServer = (socket: Socket) => {
 
    // Notifycation
    socket.on('createNotify', (data: any) => {
+      console.log('createNotify');
       const client = users.find(item => data.recipients.includes(item.id))
       client && socket.to(`${client.socketId}`).emit('createNotifyToClient', data)
    })
@@ -142,10 +149,10 @@ const SocketServer = (socket: Socket) => {
 
    // Check User Online / Offline
    socket.on('checkUserOnline', (data: any) => {
-      const following = users.filter(user => (data.following as any[]).find((item) => item._id === user.id))
+      const following = users.filter(user => (data.following as any[])?.find((item) => item._id === user.id))
       socket.emit('checkUserOnlineToMe', following)
 
-      const clients = users.filter(user => (data.followers as any[]).find((item) => item._id === user.id))
+      const clients = users.filter(user => (data.followers as any[])?.find((item) => item._id === user.id))
       
       if(clients.length > 0) {
          clients.forEach(client => {

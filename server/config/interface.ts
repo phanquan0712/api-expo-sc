@@ -2,7 +2,7 @@ import Users from '../models/userModel'
 import { Request } from 'express'
 import { StringExpression } from 'mongoose'
 export interface IUser {
-   _id?: string
+   _id: string
    fullname: string
    username: string
    email: string
